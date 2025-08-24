@@ -3,16 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bangla To‑Do</title>
+  <title>Bangla To-Do</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* আগের সব style 그대로 রাখা হয়েছে */
-    body { font-family: "Noto Sans Bengali", sans-serif; margin:0; background: var(--bg); color: var(--text); }
+    body { font-family: "Noto Sans Bengali", sans-serif; margin:0; background: var(--bg); color: var(--text);}
     :root { --bg:#f7f7f9; --card:#fff; --text:#111; --border:#ddd; --accent:#2563eb; }
     [data-theme="dark"] { --bg:#111; --card:#1a1a1a; --text:#eee; --border:#333; --accent:#60a5fa; }
     .container { max-width:960px; margin:auto; padding:20px; }
     .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px; }
-    button { cursor:pointer; }
+    button { cursor:pointer; margin-left:5px;}
     .list-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
     .list-tab { padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:var(--card); }
     .list-tab.active { background:var(--accent); color:#fff; border-color:var(--accent); }
@@ -22,14 +21,14 @@
   <div id="root"></div>
 
   <script type="module">
-    import React, {useEffect, useState, useCallback} from 'https://esm.sh/react@18.3.1';
+    import React, {useEffect, useState} from 'https://esm.sh/react@18.3.1';
     import { createRoot } from 'https://esm.sh/react-dom@18.3.1/client';
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // Firebase config
+    // ✅ তোমার Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAyZE7srt9ODVr4umkqqzn7mmgCURM4vLA",
       authDomain: "to-do-list-fdcf2.firebaseapp.com",
@@ -40,17 +39,18 @@
       appId: "1:851462607587:web:3b82f5fe257a0b60b22bd6",
       measurementId: "G-P8K1QBKMX6"
     };
+
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Components
+    // Header
     function Header({user,onSignIn,onSignOut}){
       return (
         React.createElement('div',{className:'card'},
           user ? (
             React.createElement('div',null,
-              React.createElement('span',null,user.displayName),
+              React.createElement('span',null,"👋 " + user.displayName),
               React.createElement('button',{onClick:onSignOut},'Sign Out')
             )
           ) : (
@@ -69,7 +69,12 @@
 
     function AddTaskForm({onAdd}){
       const [title,setTitle]=useState('');
-      const submit=e=>{e.preventDefault();if(!title.trim())return;onAdd({title});setTitle('');};
+      const submit=e=>{
+        e.preventDefault();
+        if(!title.trim()) return;
+        onAdd({title});
+        setTitle('');
+      };
       return React.createElement('form',{onSubmit:submit,className:'card'},
         React.createElement('input',{value:title,onChange:e=>setTitle(e.target.value),placeholder:'কাজ যোগ করুন…'}),
         React.createElement('button',{type:'submit'},'Add')
@@ -115,8 +120,13 @@
         }
       },[user,activeList]);
 
-      const signIn=()=>signInWithPopup(auth,new GoogleAuthProvider());
-      const signOutNow=()=>signOut(auth);
+      const provider = new GoogleAuthProvider();
+      const signIn=()=> {
+        signInWithPopup(auth, provider)
+          .then(result=> console.log("Signed in:", result.user.displayName))
+          .catch(err=> { console.error(err); alert("Sign-in error: "+err.message); });
+      };
+      const signOutNow=()=> signOut(auth);
 
       const addList=async()=>{
         const name=prompt('লিস্ট নাম দিন');
@@ -151,3 +161,4 @@
   </script>
 </body>
 </html>
+
