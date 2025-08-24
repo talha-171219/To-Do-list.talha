@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html lang="bn">
 <head>
   <meta charset="utf-8" />
@@ -6,25 +7,21 @@
   <title>📝 আমার দৈনন্দিন কাজের তালিকা</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family:"Noto Sans Bengali",sans-serif;
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
-    }
+    /* ✅ Always-on Dark Theme */
     :root {
-      --bg:#f7f7f9;
-      --card:#fff;
-      --text:#111;
-      --border:#ddd;
-      --accent:#2563eb;
-    }
-    [data-theme="dark"] {
       --bg:#111;
       --card:#1a1a1a;
       --text:#fff;
       --border:#333;
       --accent:#60a5fa;
+      --purple:#9333ea;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family:"Noto Sans Bengali",sans-serif;
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
     }
     .container { max-width:960px; margin:auto; padding:20px; }
     .card {
@@ -33,350 +30,386 @@
       border-radius:12px;
       padding:14px;
       margin-bottom:14px;
-      box-shadow:0 2px 5px rgba(0,0,0,0.08);
+      box-shadow:0 2px 5px rgba(0,0,0,0.25);
       color:var(--text);
-    }
-    .top-bar {
-      display:flex; align-items:center; gap:10px; margin-bottom:12px;
-    }
-    .clock-box {
-      padding:8px 12px; border:1px solid var(--border); border-radius:10px;
-      background:var(--card); font-weight:600; min-width:120px; text-align:center;
-    }
-    button {
-      cursor:pointer; margin-left:5px; padding:5px 10px; border-radius:6px;
-      border:1px solid var(--border); background:var(--card); color:#fff;
-    }
-    button:hover { opacity:0.9; }
-    .theme-btn {
-      background:#f59e0b !important; color:#fff !important; border:none; font-weight:600;
-    }
+    }/* Top bar: only the clock now */
+.top-bar { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
 
-    .list-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
-    .list-tab {
-      padding:8px 12px; border-radius:8px; border:1px solid var(--border);
-      background:var(--card); cursor:pointer; color:#fff;
-    }
-    .list-tab.active { color:#fff; border-color:transparent; }
-    .list-tab:nth-child(1).active { background:#2563eb; } /* নীল */
-    .list-tab:nth-child(2).active { background:#16a34a; } /* সবুজ */
-    .list-tab:nth-child(3).active { background:#e11d48; } /* লাল */
-    .list-tab:nth-child(4).active { background:#9333ea; } /* বেগুনি */
+/* ⏰ Purple clock */
+.clock-box {
+  padding:8px 12px;
+  border-radius:10px;
+  background:var(--purple);
+  color:#fff;
+  font-weight:700;
+  min-width:150px; text-align:center;
+  box-shadow:0 4px 12px rgba(147,51,234,0.35);
+  border:none;
+  letter-spacing:0.5px;
+}
 
-    input[type="text"] {
-      padding:8px 10px; border:1px solid var(--border); border-radius:8px;
-      outline:none; width:70%;
-    }
-    input[type="text"]:focus { border-color:var(--accent); }
+button {
+  cursor:pointer; margin-left:5px; padding:8px 12px; border-radius:8px;
+  border:1px solid var(--border); background:var(--card); color:#fff; font-weight:600;
+}
+button:hover { opacity:0.9; }
 
-    .task-box {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:10px; border:1px solid var(--border); border-radius:10px;
-      margin-bottom:10px; background:var(--card);
-    }
-    .task-title { margin-left:6px; flex-grow:1; }
-    .task-title.completed { text-decoration:line-through; opacity:0.7; }
-    .task-date { font-size:12px; color:gray; margin-left:30px; }
+.list-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.list-tab {
+  padding:8px 12px; border-radius:8px; border:1px solid var(--border);
+  background:var(--card); cursor:pointer; color:#fff; transition:all .15s ease;
+}
+.list-tab.active { color:#fff; border-color:transparent; }
+.list-tab:nth-child(1).active { background:#2563eb; }
+.list-tab:nth-child(2).active { background:#16a34a; }
+.list-tab:nth-child(3).active { background:#e11d48; }
+.list-tab:nth-child(4).active { background:#9333ea; }
 
-    .header-box {
-      background:#16a34a; color:#fff; padding:20px; border-radius:12px;
-      text-align:center; margin-bottom:14px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.6), 0 0 10px rgba(255,255,255,0.2);
-    }
-    .header-box h2 { margin:0; font-size:22px; }
-    .header-box p { margin:5px 0 0 0; font-size:14px; opacity:0.9; }
+input[type="text"], input[type="number"] {
+  padding:10px 12px; border:1px solid var(--border); border-radius:8px;
+  outline:none; width:70%; background:var(--bg); color:var(--text);
+}
+input::placeholder{ color:#aaa; }
+input[type="text"]:focus, input[type="number"]:focus { border-color:var(--accent); }
 
-    /* Reminder form row */
-    .reminder-row {
-      display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px;
-    }
-    .reminder-chip {
-      padding:6px 10px; border:1px solid var(--border); border-radius:8px;
-      background:var(--card);
-    }
-    .reminder-input {
-      width:80px; padding:6px 8px; border:1px solid var(--border); border-radius:8px;
-      background:var(--card); color:var(--text);
-    }
-    .reminder-note { font-size:12px; opacity:0.8; }
-    .muted { opacity:0.6; }
+.task-box {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px; border:1px solid var(--border); border-radius:10px;
+  margin-bottom:10px; background:var(--card);
+}
+.task-title { margin-left:6px; flex-grow:1; }
+.task-title.completed { text-decoration:line-through; opacity:0.7; }
+.task-date { font-size:12px; color:#bbb; margin-left:30px; }
+
+.header-box {
+  background:#16a34a; color:#fff; padding:20px; border-radius:12px;
+  text-align:center; margin-bottom:14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6), 0 0 10px rgba(255,255,255,0.08);
+}
+.header-box h2 { margin:0; font-size:22px; }
+.header-box p { margin:5px 0 0 0; font-size:14px; opacity:0.9; }
+
+.reminder-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.reminder-chip { padding:6px 10px; border:1px solid var(--border); border-radius:8px; background:var(--card); }
+.reminder-input { width:90px; }
+.reminder-note { font-size:12px; opacity:0.8; }
+.muted { opacity:0.6; }
+
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="module">
-    import React,{useEffect,useState,useRef} from 'https://esm.sh/react@18.3.1';
+    import React,{useEffect,useState} from 'https://esm.sh/react@18.3.1';
     import { createRoot } from 'https://esm.sh/react-dom@18.3.1/client';
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore,collection,addDoc,doc,deleteDoc,updateDoc,onSnapshot,query,orderBy,serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore,collection,addDoc,doc,deleteDoc,updateDoc,onSnapshot,query,orderBy,serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";// ✅ Firebase Config (unchanged)
+const firebaseConfig = {
+  apiKey: "AIzaSyAyZE7srt9ODVr4umkqqzn7mmgCURM4vLA",
+  authDomain: "to-do-list-fdcf2.firebaseapp.com",
+  databaseURL: "https://to-do-list-fdcf2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "to-do-list-fdcf2",
+  storageBucket: "to-do-list-fdcf2.appspot.com",
+  messagingSenderId: "851462607587",
+  appId: "1:851462607587:web:3b82f5fe257a0b60b22bd6",
+  measurementId: "G-P8K1QBKMX6"
+};
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+    // Ask notification permission right when app loads
+  if ("Notification" in window) {
+    Notification.requestPermission().then(permission => {
+      console.log("Notification permission:", permission);
+    });
+  }
 
-    // ✅ Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAyZE7srt9ODVr4umkqqzn7mmgCURM4vLA",
-      authDomain: "to-do-list-fdcf2.firebaseapp.com",
-      databaseURL: "https://to-do-list-fdcf2-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "to-do-list-fdcf2",
-      storageBucket: "to-do-list-fdcf2.appspot.com",
-      messagingSenderId: "851462607587",
-      appId: "1:851462607587:web:3b82f5fe257a0b60b22bd6",
-      measurementId: "G-P8K1QBKMX6"
-    };
-    const app=initializeApp(firebaseConfig);
-    const auth=getAuth(app);
-    const db=getFirestore(app);
+// 🔔 Audio Tone (pleasant chime) using Web Audio API
+let audioCtx = null;
+function ensureAudio(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const unlock = () => { if(audioCtx.state === 'suspended') audioCtx.resume(); window.removeEventListener('pointerdown', unlock); };
+    window.addEventListener('pointerdown', unlock, {once:true});
+  }
+}
+function playReminderTone(){
+  try{
+    ensureAudio();
+    const ctx = audioCtx; if(!ctx) return;
+    const now = ctx.currentTime + 0.05;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.connect(ctx.destination);
 
-    // 🔘 Header
-    function Header({user,onSignIn,onSignOut}){
-      return React.createElement('div',null,
-        React.createElement('div',{className:'header-box'},
-          React.createElement('h2',null,"📝 আমার দৈনন্দিন কাজের তালিকা"),
-          React.createElement('p',null,"talha.io")
-        ),
-        user?(
-          React.createElement('div',{className:'card'},
-            React.createElement('span',null,"👋 "+user.displayName),
-            React.createElement('button',{onClick:onSignOut},'Sign Out')
-          )
-        ):(
-          React.createElement('div',{className:'card'},
-            React.createElement('button',{onClick:onSignIn},'Google দিয়ে সাইন ইন')
-          )
-        )
-      );
+    const notes = [
+      {f:523.25, d:0.20}, // C5
+      {f:659.25, d:0.18}, // E5
+      {f:783.99, d:0.22}, // G5
+      {f:1046.50,d:0.30}, // C6
+    ];
+    let t = now;
+    notes.forEach((n,i)=>{
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(n.f, t);
+      osc.connect(gain);
+      gain.gain.exponentialRampToValueAtTime(0.4, t+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t+n.d);
+      osc.start(t);
+      osc.stop(t+n.d+0.02);
+      t += n.d*0.9; // slight overlap
+    });
+  }catch(e){ /* ignore */ }
+}
+
+// 🔘 Header
+function Header({user,onSignIn,onSignOut}){
+  return React.createElement('div',null,
+    React.createElement('div',{className:'header-box'},
+      React.createElement('h2',null,"📝 আমার দৈনন্দিন কাজের তালিকা"),
+      React.createElement('p',null,"talha.io")
+    ),
+    user?(
+      React.createElement('div',{className:'card'},
+        React.createElement('span',null,"👋 "+user.displayName),
+        React.createElement('button',{onClick:onSignOut},'Sign Out')
+      )
+    ):(
+      React.createElement('div',{className:'card'},
+        React.createElement('button',{onClick:onSignIn},'Google দিয়ে সাইন ইন')
+      )
+    )
+  );
+}
+
+// ⏰ Digital Clock — 12-hour format, purple background handled via CSS
+function DigitalClock(){
+  const [now,setNow]=useState(new Date());
+  useEffect(()=>{ const t=setInterval(()=>setNow(new Date()),1000); return ()=>clearInterval(t); },[]);
+  const timeStr = new Intl.DateTimeFormat('bn-BD',{ hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true }).format(now);
+  return React.createElement('div',{className:'clock-box'}, timeStr);
+}
+
+// 🌗 Top Bar (clock only; theme toggle removed)
+function TopBar(){
+  return React.createElement('div',{className:'top-bar'},
+    React.createElement(DigitalClock,null)
+  );
+}
+
+// 📑 List Tabs
+function ListTabs({lists,active,onSelect,onAdd}){
+  return React.createElement('div',{className:'list-tabs'},
+    lists.map((l)=>React.createElement('button',{
+      key:l.id,
+      className:'list-tab '+(active===l.id?'active':''),
+      onClick:()=>onSelect(l.id)
+    },l.name)),
+    React.createElement('button',{className:'list-tab',onClick:onAdd},'+ লিস্ট')
+  );
+}
+
+// ➕ Add Task (with optional Reminder)
+function AddTaskForm({onAdd}){
+  const [title,setTitle]=useState('');
+  const [wantReminder,setWantReminder]=useState(false);
+  const [hrs,setHrs]=useState('');
+  const [mins,setMins]=useState('');
+  const [secs,setSecs]=useState('');
+
+  const submit= e =>{
+    e.preventDefault();
+    const trimmed = title.trim();
+    if(!trimmed) return;
+
+    let delayMs = null;
+    if(wantReminder){
+      const h = Math.max(0, parseInt(hrs||'0',10)||0);
+      const m = Math.max(0, parseInt(mins||'0',10)||0);
+      const s = Math.max(0, parseInt(secs||'0',10)||0);
+      delayMs = (h*3600 + m*60 + s) * 1000;
+      if(delayMs<=0){ delayMs = null; }
     }
 
-    // ⏰ Digital Clock
-    function DigitalClock(){
-      const [now,setNow]=useState(new Date());
-      useEffect(()=>{
-        const t=setInterval(()=>setNow(new Date()),1000);
-        return ()=>clearInterval(t);
-      },[]);
-      const timeStr = new Intl.DateTimeFormat('bn-BD',{ hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }).format(now);
-      return React.createElement('div',{className:'clock-box'}, timeStr);
-    }
+    onAdd({ title:trimmed, delayMs });
+    setTitle('');
+    setHrs(''); setMins(''); setSecs(''); setWantReminder(false);
+  };
 
-    // 🌗 Theme Toggle + Clock Row
-    function TopBar(){
-      const toggle=()=>{
-        const current=document.body.getAttribute("data-theme")||"light";
-        const next=current==="light"?"dark":"light";
-        document.body.setAttribute("data-theme",next);
-        localStorage.setItem("theme",next);
-      };
-      useEffect(()=>{
-        const saved=localStorage.getItem("theme")||"light";
-        document.body.setAttribute("data-theme",saved);
-      },[]);
-      return React.createElement('div',{className:'top-bar'},
-        React.createElement('button',{onClick:toggle,className:'theme-btn'},'🌗 থিম পরিবর্তন'),
-        React.createElement(DigitalClock,null)
-      );
-    }
+  return React.createElement('form',{onSubmit:submit,className:'card'},
+    React.createElement('input',{
+      type:"text", value:title, onChange:e=>setTitle(e.target.value),
+      placeholder:'কাজ যোগ করুন…'
+    }),
+    React.createElement('button',{type:'submit'},'➕ Add'),
 
-    // 📑 List Tabs
-    function ListTabs({lists,active,onSelect,onAdd}){
-      return React.createElement('div',{className:'list-tabs'},
-        lists.map((l)=>React.createElement('button',{
-          key:l.id,
-          className:'list-tab '+(active===l.id?'active':''),
-          onClick:()=>onSelect(l.id)
-        },l.name)),
-        React.createElement('button',{className:'list-tab',onClick:onAdd},'+ লিস্ট')
-      );
-    }
-
-    // ➕ Add Task (with optional Reminder)
-    function AddTaskForm({onAdd}){
-      const [title,setTitle]=useState('');
-      const [wantReminder,setWantReminder]=useState(false);
-      const [hrs,setHrs]=useState('');
-      const [mins,setMins]=useState('');
-      const [secs,setSecs]=useState('');
-
-      const submit= e =>{
-        e.preventDefault();
-        const trimmed = title.trim();
-        if(!trimmed) return;
-
-        let delayMs = null;
-        if(wantReminder){
-          const h = Math.max(0, parseInt(hrs||'0',10)||0);
-          const m = Math.max(0, parseInt(mins||'0',10)||0);
-          const s = Math.max(0, parseInt(secs||'0',10)||0);
-          delayMs = (h*3600 + m*60 + s) * 1000;
-          if(delayMs<=0){ delayMs = null; }
-        }
-
-        onAdd({ title:trimmed, delayMs });
-        setTitle('');
-        setHrs(''); setMins(''); setSecs(''); setWantReminder(false);
-      };
-
-      return React.createElement('form',{onSubmit:submit,className:'card'},
+    React.createElement('div',{className:'reminder-row'},
+      React.createElement('label',{className:'reminder-chip'},
         React.createElement('input',{
-          type:"text", value:title, onChange:e=>setTitle(e.target.value),
-          placeholder:'কাজ যোগ করুন…'
+          type:'checkbox',
+          checked:wantReminder,
+          onChange:e=>setWantReminder(e.target.checked)
         }),
-        React.createElement('button',{type:'submit'},'➕ Add'),
+        ' রিমাইন্ডার দেব?'
+      ),
+      React.createElement('input',{
+        className:'reminder-input',
+        type:'number', min:'0', placeholder:'ঘন্টা',
+        value:hrs, onChange:e=>setHrs(e.target.value),
+        disabled:!wantReminder
+      }),
+      React.createElement('input',{
+        className:'reminder-input',
+        type:'number', min:'0', placeholder:'মিনিট',
+        value:mins, onChange:e=>setMins(e.target.value),
+        disabled:!wantReminder
+      }),
+      React.createElement('input',{
+        className:'reminder-input',
+        type:'number', min:'0', placeholder:'সেকেন্ড',
+        value:secs, onChange:e=>setSecs(e.target.value),
+        disabled:!wantReminder
+      }),
+      React.createElement('span',{className:'reminder-note '+(!wantReminder?'muted':'')},
+        wantReminder ? 'সময় দিলে নির্দিষ্ট সময়ে নোটিফিকেশন ও সাউন্ড বাজবে' : 'রিমাইন্ডার না চাইলে টিক দিবে না'
+      )
+    )
+  );
+}
 
-        React.createElement('div',{className:'reminder-row'},
-          React.createElement('label',{className:'reminder-chip'},
-            React.createElement('input',{
-              type:'checkbox',
-              checked:wantReminder,
-              onChange:e=>setWantReminder(e.target.checked)
-            }),
-            ' রিমাইন্ডার দেব?'
-          ),
-          React.createElement('input',{
-            className:'reminder-input',
-            type:'number', min:'0', placeholder:'ঘন্টা',
-            value:hrs, onChange:e=>setHrs(e.target.value),
-            disabled:!wantReminder
-          }),
-          React.createElement('input',{
-            className:'reminder-input',
-            type:'number', min:'0', placeholder:'মিনিট',
-            value:mins, onChange:e=>setMins(e.target.value),
-            disabled:!wantReminder
-          }),
-          React.createElement('input',{
-            className:'reminder-input',
-            type:'number', min:'0', placeholder:'সেকেন্ড',
-            value:secs, onChange:e=>setSecs(e.target.value),
-            disabled:!wantReminder
-          }),
-          React.createElement('span',{className:'reminder-note '+(!wantReminder?'muted':'')},
-            wantReminder ? 'সময় দিলে নির্দিষ্ট সময়ে নোটিফিকেশন আসবে' : 'রিমাইন্ডার না চাইলে টিক দিবে না'
-          )
-        )
-      );
-    }
+// 📝 Task List
+function TaskList({tasks,onToggle,onDelete}){
+  const formatDate=ts=>{
+    if(!ts) return "";
+    const d=ts.toDate();
+    return new Intl.DateTimeFormat('bn-BD',{dateStyle:'full'}).format(d);
+  };
+  return React.createElement('div',{className:'card'},
+    tasks.length?tasks.map(t=>
+      React.createElement('div',{key:t.id,className:'task-box'},
+        React.createElement('input',{type:'checkbox',checked:t.completed,onChange:()=>onToggle(t)}),
+        React.createElement('span',{className:'task-title '+(t.completed?'completed':'' )},t.completed?"✅ "+t.title:t.title),
+        React.createElement('div',{className:'task-date'},
+          formatDate(t.createdAt), t.reminderAt ? ' • 🔔' : ''
+        ),
+        React.createElement('button',{onClick:()=>onDelete(t)},'❌')
+      )
+    ):'কোনো কাজ নেই'
+  );
+}
 
-    // 📝 Task List
-    function TaskList({tasks,onToggle,onDelete}){
-      const formatDate=ts=>{
-        if(!ts) return "";
-        const d=ts.toDate();
-        return new Intl.DateTimeFormat('bn-BD',{dateStyle:'full'}).format(d);
-      };
-      return React.createElement('div',{className:'card'},
-        tasks.length?tasks.map(t=>
-          React.createElement('div',{key:t.id,className:'task-box'},
-            React.createElement('input',{type:'checkbox',checked:t.completed,onChange:()=>onToggle(t)}),
-            React.createElement('span',{className:'task-title '+(t.completed?'completed':'' )},t.completed?"✅ "+t.title:t.title),
-            React.createElement('div',{className:'task-date'},
-              formatDate(t.createdAt), t.reminderAt ? ' • 🔔' : ''
-            ),
-            React.createElement('button',{onClick:()=>onDelete(t)},'❌')
-          )
-        ):'কোনো কাজ নেই'
-      );
-    }
+// 🔔 Web Notification + Sound helper
+function requestNotifyPermission(){
+  if(!('Notification' in window)) return false;
+  if(Notification.permission === 'granted') return true;
+  if(Notification.permission === 'denied') return false;
+  Notification.requestPermission();
+  return Notification.permission === 'granted';
+}
+function scheduleLocalReminder(title, delayMs){
+  if(delayMs==null) return;
 
-    // 🔔 Local Notification helper
-    function requestNotifyPermission(){
-      if(!('Notification' in window)) return false;
-      if(Notification.permission === 'granted') return true;
-      if(Notification.permission === 'denied') return false;
-      Notification.requestPermission();
-      return Notification.permission === 'granted';
-    }
-    function scheduleLocalReminder(title, delayMs){
-      if(!('Notification' in window)) return;
+  // Ensure audio can play later
+  ensureAudio();
+
+  const trigger = () => {
+    // Play chime
+    playReminderTone();
+    // Show notification if allowed
+    if('Notification' in window){
       if(Notification.permission !== 'granted'){
-        // Try requesting once
         Notification.requestPermission().then(p=>{
-          if(p==='granted'){
-            if(delayMs!=null){
-              setTimeout(()=> new Notification('🔔 রিমাইন্ডার', { body: 'মনে কর: '+title }), delayMs);
-            }
-          }
+          if(p==='granted') new Notification('🔔 রিমাইন্ডার', { body: 'মনে কর: '+title });
         });
-        return;
+      } else {
+        new Notification('🔔 রিমাইন্ডার', { body: 'মনে কর: '+title });
       }
+    }
+  };
+  setTimeout(trigger, delayMs);
+}
+
+// 🚀 App
+function App(){
+  const [user,setUser]=useState(null);
+  const [lists,setLists]=useState([]);
+  const [activeList,setActiveList]=useState(null);
+  const [tasks,setTasks]=useState([]);
+
+  useEffect(()=>onAuthStateChanged(auth,u=>{setUser(u)}),[]);
+  useEffect(()=>{
+    if(user){
+      const unsub=onSnapshot(collection(db,'users',user.uid,'lists'),snap=>{
+        const data=snap.docs.map(d=>({id:d.id,...d.data()}));
+        setLists(data);
+        if(!activeList && data.length) setActiveList(data[0].id);
+      });
+      return unsub;
+    }
+  },[user]);
+
+  useEffect(()=>{
+    if(user&&activeList){
+      const q=query(collection(db,'users',user.uid,'lists',activeList,'tasks'),orderBy('createdAt','desc'));
+      const unsub=onSnapshot(q,snap=>{
+        setTasks(snap.docs.map(d=>({id:d.id,...d.data()})));
+      });
+      return unsub;
+    }
+  },[user,activeList]);
+
+  const provider=new GoogleAuthProvider();
+  const signIn=()=>{
+    ensureAudio(); // prepare audio after a user gesture
+    signInWithPopup(auth,provider).catch(err=>{alert("Sign-in error:"+err.message);});
+  }
+  const signOutNow=()=>signOut(auth);
+
+  const addList=async()=>{
+    const name=prompt('লিস্ট নাম দিন');
+    if(name&&user){
+      await addDoc(collection(db,'users',user.uid,'lists'),{name});
+    }
+  };
+
+  const addTask=async(payload)=>{
+    const { title, delayMs } = payload;
+    if(user&&activeList){
+      const data = {
+        title, completed:false, createdAt:serverTimestamp()
+      };
       if(delayMs!=null){
-        setTimeout(()=> new Notification('🔔 রিমাইন্ডার', { body: 'মনে কর: '+title }), delayMs);
+        data.reminderAt = new Date(Date.now()+delayMs).toISOString(); // display only
+      }
+      await addDoc(collection(db,'users',user.uid,'lists',activeList,'tasks'), data);
+
+      // Local reminder: sound + notification (tab must be alive)
+      if(delayMs!=null){
+        scheduleLocalReminder(title, delayMs);
       }
     }
+  };
 
-    // 🚀 App
-    function App(){
-      const [user,setUser]=useState(null);
-      const [lists,setLists]=useState([]);
-      const [activeList,setActiveList]=useState(null);
-      const [tasks,setTasks]=useState([]);
+  const toggleTask=async(task)=>{
+    await updateDoc(doc(db,'users',user.uid,'lists',activeList,'tasks',task.id),{completed:!task.completed});
+  };
 
-      useEffect(()=>onAuthStateChanged(auth,u=>{setUser(u)}),[]);
-      useEffect(()=>{
-        if(user){
-          const unsub=onSnapshot(collection(db,'users',user.uid,'lists'),snap=>{
-            const data=snap.docs.map(d=>({id:d.id,...d.data()}));
-            setLists(data);
-            if(!activeList && data.length) setActiveList(data[0].id);
-          });
-          return unsub;
-        }
-      },[user]);
+  const deleteTask=async(task)=>{
+    await deleteDoc(doc(db,'users',user.uid,'lists',activeList,'tasks',task.id));
+  };
 
-      useEffect(()=>{
-        if(user&&activeList){
-          const q=query(collection(db,'users',user.uid,'lists',activeList,'tasks'),orderBy('createdAt','desc'));
-          const unsub=onSnapshot(q,snap=>{
-            setTasks(snap.docs.map(d=>({id:d.id,...d.data()})));
-          });
-          return unsub;
-        }
-      },[user,activeList]);
+  return React.createElement('div',{className:'container'},
+    React.createElement(Header,{user,onSignIn:signIn,onSignOut:signOutNow}),
+    React.createElement(TopBar,null),
+    user && React.createElement(ListTabs,{lists,active:activeList,onSelect:setActiveList,onAdd:addList}),
+    user && activeList && React.createElement(AddTaskForm,{onAdd:addTask}),
+    user && activeList && React.createElement(TaskList,{tasks,onToggle:toggleTask,onDelete:deleteTask})
+  );
+}
+createRoot(document.getElementById('root')).render(React.createElement(App));
 
-      const provider=new GoogleAuthProvider();
-      const signIn=()=>signInWithPopup(auth,provider).catch(err=>{alert("Sign-in error:"+err.message);});
-      const signOutNow=()=>signOut(auth);
-
-      const addList=async()=>{
-        const name=prompt('লিস্ট নাম দিন');
-        if(name&&user){
-          await addDoc(collection(db,'users',user.uid,'lists'),{name});
-        }
-      };
-
-      const addTask=async(payload)=>{
-        const { title, delayMs } = payload;
-        if(user&&activeList){
-          const data = {
-            title, completed:false, createdAt:serverTimestamp()
-          };
-          if(delayMs!=null){
-            data.reminderAt = new Date(Date.now()+delayMs).toISOString(); // শুধু দেখার সুবিধার জন্য
-          }
-          const ref = await addDoc(collection(db,'users',user.uid,'lists',activeList,'tasks'), data);
-
-          // Local reminder schedule (tab alive থাকলে)
-          if(delayMs!=null){
-            scheduleLocalReminder(title, delayMs);
-          }
-        }
-      };
-
-      const toggleTask=async(task)=>{
-        await updateDoc(doc(db,'users',user.uid,'lists',activeList,'tasks',task.id),{completed:!task.completed});
-      };
-
-      const deleteTask=async(task)=>{
-        await deleteDoc(doc(db,'users',user.uid,'lists',activeList,'tasks',task.id));
-      };
-
-      return React.createElement('div',{className:'container'},
-        React.createElement(Header,{user,onSignIn:signIn,onSignOut:signOutNow}),
-        React.createElement(TopBar,null),
-        user && React.createElement(ListTabs,{lists,active:activeList,onSelect:setActiveList,onAdd:addList}),
-        user && activeList && React.createElement(AddTaskForm,{onAdd:addTask}),
-        user && activeList && React.createElement(TaskList,{tasks,onToggle:toggleTask,onDelete:deleteTask})
-      );
-    }
-    createRoot(document.getElementById('root')).render(React.createElement(App));
   </script>
 </body>
 </html>
