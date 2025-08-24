@@ -3,30 +3,41 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bangla To-Do</title>
+  <title>📝 আমার কাজের তালিকা</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: "Noto Sans Bengali", sans-serif; margin:0; background: var(--bg); color: var(--text);}
+    body { font-family:"Noto Sans Bengali",sans-serif; margin:0; background:var(--bg); color:var(--text);}
     :root { --bg:#f7f7f9; --card:#fff; --text:#111; --border:#ddd; --accent:#2563eb; }
-    [data-theme="dark"] { --bg:#111; --card:#1a1a1a; --text:#eee; --border:#333; --accent:#60a5fa; }
+    [data-theme="dark"] { --bg:#111; --card:#1a1a1a; --text:#fff; --border:#333; --accent:#60a5fa; }
     .container { max-width:960px; margin:auto; padding:20px; }
-    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px; }
-    button { cursor:pointer; margin-left:5px;}
+    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px; box-shadow:0 2px 5px rgba(0,0,0,0.08);}
+    button { cursor:pointer; margin-left:5px; padding:5px 10px; border-radius:6px; border:1px solid var(--border); background:var(--card); }
+    button:hover { opacity:0.9; }
     .list-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
-    .list-tab { padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:var(--card); }
-    .list-tab.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .list-tab { padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:var(--card); cursor:pointer; }
+    .list-tab.active { color:#fff; border-color:transparent; }
+    .list-tab:nth-child(1).active { background:#2563eb; }   /* নীল */
+    .list-tab:nth-child(2).active { background:#16a34a; }   /* সবুজ */
+    .list-tab:nth-child(3).active { background:#e11d48; }   /* লাল */
+    .list-tab:nth-child(4).active { background:#9333ea; }   /* বেগুনি */
+    input[type="text"] { padding:8px 10px; border:1px solid var(--border); border-radius:8px; outline:none; width:70%; }
+    input[type="text"]:focus { border-color:var(--accent); }
+    .task-box { display:flex; align-items:center; justify-content:space-between; padding:10px; border:1px solid var(--border); border-radius:10px; margin-bottom:10px; background:var(--card); }
+    .task-title { margin-left:6px; flex-grow:1; }
+    .task-title.completed { text-decoration:line-through; opacity:0.7; }
+    .task-date { font-size:12px; color:gray; margin-left:30px; }
   </style>
 </head>
 <body>
   <div id="root"></div>
 
   <script type="module">
-    import React, {useEffect, useState} from 'https://esm.sh/react@18.3.1';
+    import React,{useEffect,useState} from 'https://esm.sh/react@18.3.1';
     import { createRoot } from 'https://esm.sh/react-dom@18.3.1/client';
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore,collection,addDoc,doc,deleteDoc,updateDoc,onSnapshot,query,orderBy,serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // ✅ তোমার Firebase Config
     const firebaseConfig = {
@@ -40,33 +51,53 @@
       measurementId: "G-P8K1QBKMX6"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    const app=initializeApp(firebaseConfig);
+    const auth=getAuth(app);
+    const db=getFirestore(app);
 
-    // Header
+    // 🔘 Header
     function Header({user,onSignIn,onSignOut}){
-      return (
-        React.createElement('div',{className:'card'},
-          user ? (
-            React.createElement('div',null,
-              React.createElement('span',null,"👋 " + user.displayName),
-              React.createElement('button',{onClick:onSignOut},'Sign Out')
-            )
-          ) : (
-            React.createElement('button',{onClick:onSignIn},'Google দিয়ে সাইন ইন')
+      return React.createElement('div',{className:'card'},
+        React.createElement('h2',null,"📝 আমার কাজের তালিকা"),
+        user?(
+          React.createElement('div',null,
+            React.createElement('span',null,"👋 "+user.displayName),
+            React.createElement('button',{onClick:onSignOut},'Sign Out')
           )
+        ):(
+          React.createElement('button',{onClick:onSignIn},'Google দিয়ে সাইন ইন')
         )
       );
     }
 
+    // 🌗 Theme Toggle
+    function ThemeToggle(){
+      const toggle=()=>{
+        const current=document.body.getAttribute("data-theme")||"light";
+        const next=current==="light"?"dark":"light";
+        document.body.setAttribute("data-theme",next);
+        localStorage.setItem("theme",next);
+      };
+      useEffect(()=>{
+        const saved=localStorage.getItem("theme")||"light";
+        document.body.setAttribute("data-theme",saved);
+      },[]);
+      return React.createElement('button',{onClick:toggle},'🌗 থিম পরিবর্তন');
+    }
+
+    // 📑 List Tabs
     function ListTabs({lists,active,onSelect,onAdd}){
       return React.createElement('div',{className:'list-tabs'},
-        lists.map(l=> React.createElement('button',{key:l.id,className:'list-tab '+(active===l.id?'active':''),onClick:()=>onSelect(l.id)},l.name)),
+        lists.map((l,i)=>React.createElement('button',{
+          key:l.id,
+          className:'list-tab '+(active===l.id?'active':''),
+          onClick:()=>onSelect(l.id)
+        },l.name)),
         React.createElement('button',{className:'list-tab',onClick:onAdd},'+ লিস্ট')
       );
     }
 
+    // ➕ Add Task
     function AddTaskForm({onAdd}){
       const [title,setTitle]=useState('');
       const submit=e=>{
@@ -76,28 +107,38 @@
         setTitle('');
       };
       return React.createElement('form',{onSubmit:submit,className:'card'},
-        React.createElement('input',{value:title,onChange:e=>setTitle(e.target.value),placeholder:'কাজ যোগ করুন…'}),
-        React.createElement('button',{type:'submit'},'Add')
+        React.createElement('input',{type:"text",value:title,onChange:e=>setTitle(e.target.value),placeholder:'কাজ যোগ করুন…'}),
+        React.createElement('button',{type:'submit'},'➕ Add')
       );
     }
 
+    // 📝 Task List
     function TaskList({tasks,onToggle,onDelete}){
+      const formatDate=ts=>{
+        if(!ts) return "";
+        const d=ts.toDate();
+        return new Intl.DateTimeFormat('bn-BD',{dateStyle:'full'}).format(d);
+      };
       return React.createElement('div',{className:'card'},
-        tasks.length? tasks.map(t=>React.createElement('div',{key:t.id},
-          React.createElement('input',{type:'checkbox',checked:t.completed,onChange:()=>onToggle(t)}),
-          React.createElement('span',null,t.title),
-          React.createElement('button',{onClick:()=>onDelete(t)},'❌')
-        )): 'কোনো কাজ নেই'
+        tasks.length?tasks.map(t=>
+          React.createElement('div',{key:t.id,className:'task-box'},
+            React.createElement('input',{type:'checkbox',checked:t.completed,onChange:()=>onToggle(t)}),
+            React.createElement('span',{className:'task-title '+(t.completed?'completed':'' )},t.completed?"✅ "+t.title:t.title),
+            React.createElement('div',{className:'task-date'},formatDate(t.createdAt)),
+            React.createElement('button',{onClick:()=>onDelete(t)},'❌')
+          )
+        ):'কোনো কাজ নেই'
       );
     }
 
+    // 🚀 App
     function App(){
       const [user,setUser]=useState(null);
       const [lists,setLists]=useState([]);
       const [activeList,setActiveList]=useState(null);
       const [tasks,setTasks]=useState([]);
 
-      useEffect(()=> onAuthStateChanged(auth,u=>{setUser(u)}),[]);
+      useEffect(()=>onAuthStateChanged(auth,u=>{setUser(u)}),[]);
 
       useEffect(()=>{
         if(user){
@@ -111,7 +152,7 @@
       },[user]);
 
       useEffect(()=>{
-        if(user && activeList){
+        if(user&&activeList){
           const q=query(collection(db,'users',user.uid,'lists',activeList,'tasks'),orderBy('createdAt','desc'));
           const unsub=onSnapshot(q,snap=>{
             setTasks(snap.docs.map(d=>({id:d.id,...d.data()})));
@@ -120,13 +161,9 @@
         }
       },[user,activeList]);
 
-      const provider = new GoogleAuthProvider();
-      const signIn=()=> {
-        signInWithPopup(auth, provider)
-          .then(result=> console.log("Signed in:", result.user.displayName))
-          .catch(err=> { console.error(err); alert("Sign-in error: "+err.message); });
-      };
-      const signOutNow=()=> signOut(auth);
+      const provider=new GoogleAuthProvider();
+      const signIn=()=>signInWithPopup(auth,provider).catch(err=>{alert("Sign-in error:"+err.message);});
+      const signOutNow=()=>signOut(auth);
 
       const addList=async()=>{
         const name=prompt('লিস্ট নাম দিন');
@@ -134,7 +171,6 @@
           await addDoc(collection(db,'users',user.uid,'lists'),{name});
         }
       };
-
       const addTask=async(payload)=>{
         if(user&&activeList){
           await addDoc(collection(db,'users',user.uid,'lists',activeList,'tasks'),{
@@ -151,6 +187,7 @@
 
       return React.createElement('div',{className:'container'},
         React.createElement(Header,{user,onSignIn:signIn,onSignOut:signOutNow}),
+        React.createElement(ThemeToggle),
         user && React.createElement(ListTabs,{lists,active:activeList,onSelect:setActiveList,onAdd:addList}),
         user && activeList && React.createElement(AddTaskForm,{onAdd:addTask}),
         user && activeList && React.createElement(TaskList,{tasks,onToggle:toggleTask,onDelete:deleteTask})
@@ -161,4 +198,3 @@
   </script>
 </body>
 </html>
-
