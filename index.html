@@ -26,11 +26,7 @@
       --border:#333;
       --accent:#60a5fa;
     }
-    .container {
-      max-width:960px;
-      margin:auto;
-      padding:20px;
-    }
+    .container { max-width:960px; margin:auto; padding:20px; }
     .card {
       background:var(--card);
       border:1px solid var(--border);
@@ -40,38 +36,26 @@
       box-shadow:0 2px 5px rgba(0,0,0,0.08);
       color:var(--text);
     }
+    .top-bar {
+      display:flex; align-items:center; gap:10px; margin-bottom:12px;
+    }
+    .clock-box {
+      padding:8px 12px; border:1px solid var(--border); border-radius:10px;
+      background:var(--card); font-weight:600; min-width:120px; text-align:center;
+    }
     button {
-      cursor:pointer;
-      margin-left:5px;
-      padding:5px 10px;
-      border-radius:6px;
-      border:1px solid var(--border);
-      background:var(--card);
-      color:#fff; /* ✅ সব button text সাদা */
+      cursor:pointer; margin-left:5px; padding:5px 10px; border-radius:6px;
+      border:1px solid var(--border); background:var(--card); color:#fff;
     }
     button:hover { opacity:0.9; }
-
-    /* 🌗 থিম পরিবর্তন বাটনের জন্য */
     .theme-btn {
-      background:#f59e0b !important; /* হালকা কমলা */
-      color:#fff !important;         /* টেক্সট একদম সাদা */
-      border:none;
-      font-weight:600;
+      background:#f59e0b !important; color:#fff !important; border:none; font-weight:600;
     }
 
-    .list-tabs {
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-bottom:12px;
-    }
+    .list-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
     .list-tab {
-      padding:8px 12px;
-      border-radius:8px;
-      border:1px solid var(--border);
-      background:var(--card);
-      cursor:pointer;
-      color:#fff; /* ✅ list-tab এর টেক্সট সবসময় সাদা */
+      padding:8px 12px; border-radius:8px; border:1px solid var(--border);
+      background:var(--card); cursor:pointer; color:#fff;
     }
     .list-tab.active { color:#fff; border-color:transparent; }
     .list-tab:nth-child(1).active { background:#2563eb; } /* নীল */
@@ -80,47 +64,48 @@
     .list-tab:nth-child(4).active { background:#9333ea; } /* বেগুনি */
 
     input[type="text"] {
-      padding:8px 10px;
-      border:1px solid var(--border);
-      border-radius:8px;
-      outline:none;
-      width:70%;
+      padding:8px 10px; border:1px solid var(--border); border-radius:8px;
+      outline:none; width:70%;
     }
     input[type="text"]:focus { border-color:var(--accent); }
 
     .task-box {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:10px;
-      border:1px solid var(--border);
-      border-radius:10px;
-      margin-bottom:10px;
-      background:var(--card);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px; border:1px solid var(--border); border-radius:10px;
+      margin-bottom:10px; background:var(--card);
     }
     .task-title { margin-left:6px; flex-grow:1; }
     .task-title.completed { text-decoration:line-through; opacity:0.7; }
     .task-date { font-size:12px; color:gray; margin-left:30px; }
 
-    /* ✅ Green Header Box */
     .header-box {
-      background:#16a34a;
-      color:#fff;
-      padding:20px;
-      border-radius:12px;
-      text-align:center;
-      margin-bottom:14px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.6), 
-                  0 0 10px rgba(255,255,255,0.2);
+      background:#16a34a; color:#fff; padding:20px; border-radius:12px;
+      text-align:center; margin-bottom:14px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6), 0 0 10px rgba(255,255,255,0.2);
     }
     .header-box h2 { margin:0; font-size:22px; }
     .header-box p { margin:5px 0 0 0; font-size:14px; opacity:0.9; }
+
+    /* Reminder form row */
+    .reminder-row {
+      display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px;
+    }
+    .reminder-chip {
+      padding:6px 10px; border:1px solid var(--border); border-radius:8px;
+      background:var(--card);
+    }
+    .reminder-input {
+      width:80px; padding:6px 8px; border:1px solid var(--border); border-radius:8px;
+      background:var(--card); color:var(--text);
+    }
+    .reminder-note { font-size:12px; opacity:0.8; }
+    .muted { opacity:0.6; }
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="module">
-    import React,{useEffect,useState} from 'https://esm.sh/react@18.3.1';
+    import React,{useEffect,useState,useRef} from 'https://esm.sh/react@18.3.1';
     import { createRoot } from 'https://esm.sh/react-dom@18.3.1/client';
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -161,8 +146,19 @@
       );
     }
 
-    // 🌗 Theme Toggle
-    function ThemeToggle(){
+    // ⏰ Digital Clock
+    function DigitalClock(){
+      const [now,setNow]=useState(new Date());
+      useEffect(()=>{
+        const t=setInterval(()=>setNow(new Date()),1000);
+        return ()=>clearInterval(t);
+      },[]);
+      const timeStr = new Intl.DateTimeFormat('bn-BD',{ hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }).format(now);
+      return React.createElement('div',{className:'clock-box'}, timeStr);
+    }
+
+    // 🌗 Theme Toggle + Clock Row
+    function TopBar(){
       const toggle=()=>{
         const current=document.body.getAttribute("data-theme")||"light";
         const next=current==="light"?"dark":"light";
@@ -173,13 +169,16 @@
         const saved=localStorage.getItem("theme")||"light";
         document.body.setAttribute("data-theme",saved);
       },[]);
-      return React.createElement('button',{onClick:toggle,className:'theme-btn'},'🌗 থিম পরিবর্তন');
+      return React.createElement('div',{className:'top-bar'},
+        React.createElement('button',{onClick:toggle,className:'theme-btn'},'🌗 থিম পরিবর্তন'),
+        React.createElement(DigitalClock,null)
+      );
     }
 
     // 📑 List Tabs
     function ListTabs({lists,active,onSelect,onAdd}){
       return React.createElement('div',{className:'list-tabs'},
-        lists.map((l,i)=>React.createElement('button',{
+        lists.map((l)=>React.createElement('button',{
           key:l.id,
           className:'list-tab '+(active===l.id?'active':''),
           onClick:()=>onSelect(l.id)
@@ -188,18 +187,71 @@
       );
     }
 
-    // ➕ Add Task
+    // ➕ Add Task (with optional Reminder)
     function AddTaskForm({onAdd}){
       const [title,setTitle]=useState('');
-      const submit=e=>{
+      const [wantReminder,setWantReminder]=useState(false);
+      const [hrs,setHrs]=useState('');
+      const [mins,setMins]=useState('');
+      const [secs,setSecs]=useState('');
+
+      const submit= e =>{
         e.preventDefault();
-        if(!title.trim()) return;
-        onAdd({title});
+        const trimmed = title.trim();
+        if(!trimmed) return;
+
+        let delayMs = null;
+        if(wantReminder){
+          const h = Math.max(0, parseInt(hrs||'0',10)||0);
+          const m = Math.max(0, parseInt(mins||'0',10)||0);
+          const s = Math.max(0, parseInt(secs||'0',10)||0);
+          delayMs = (h*3600 + m*60 + s) * 1000;
+          if(delayMs<=0){ delayMs = null; }
+        }
+
+        onAdd({ title:trimmed, delayMs });
         setTitle('');
+        setHrs(''); setMins(''); setSecs(''); setWantReminder(false);
       };
+
       return React.createElement('form',{onSubmit:submit,className:'card'},
-        React.createElement('input',{type:"text",value:title,onChange:e=>setTitle(e.target.value),placeholder:'কাজ যোগ করুন…'}),
-        React.createElement('button',{type:'submit'},'➕ Add')
+        React.createElement('input',{
+          type:"text", value:title, onChange:e=>setTitle(e.target.value),
+          placeholder:'কাজ যোগ করুন…'
+        }),
+        React.createElement('button',{type:'submit'},'➕ Add'),
+
+        React.createElement('div',{className:'reminder-row'},
+          React.createElement('label',{className:'reminder-chip'},
+            React.createElement('input',{
+              type:'checkbox',
+              checked:wantReminder,
+              onChange:e=>setWantReminder(e.target.checked)
+            }),
+            ' রিমাইন্ডার দেব?'
+          ),
+          React.createElement('input',{
+            className:'reminder-input',
+            type:'number', min:'0', placeholder:'ঘন্টা',
+            value:hrs, onChange:e=>setHrs(e.target.value),
+            disabled:!wantReminder
+          }),
+          React.createElement('input',{
+            className:'reminder-input',
+            type:'number', min:'0', placeholder:'মিনিট',
+            value:mins, onChange:e=>setMins(e.target.value),
+            disabled:!wantReminder
+          }),
+          React.createElement('input',{
+            className:'reminder-input',
+            type:'number', min:'0', placeholder:'সেকেন্ড',
+            value:secs, onChange:e=>setSecs(e.target.value),
+            disabled:!wantReminder
+          }),
+          React.createElement('span',{className:'reminder-note '+(!wantReminder?'muted':'')},
+            wantReminder ? 'সময় দিলে নির্দিষ্ট সময়ে নোটিফিকেশন আসবে' : 'রিমাইন্ডার না চাইলে টিক দিবে না'
+          )
+        )
       );
     }
 
@@ -215,11 +267,39 @@
           React.createElement('div',{key:t.id,className:'task-box'},
             React.createElement('input',{type:'checkbox',checked:t.completed,onChange:()=>onToggle(t)}),
             React.createElement('span',{className:'task-title '+(t.completed?'completed':'' )},t.completed?"✅ "+t.title:t.title),
-            React.createElement('div',{className:'task-date'},formatDate(t.createdAt)),
+            React.createElement('div',{className:'task-date'},
+              formatDate(t.createdAt), t.reminderAt ? ' • 🔔' : ''
+            ),
             React.createElement('button',{onClick:()=>onDelete(t)},'❌')
           )
         ):'কোনো কাজ নেই'
       );
+    }
+
+    // 🔔 Local Notification helper
+    function requestNotifyPermission(){
+      if(!('Notification' in window)) return false;
+      if(Notification.permission === 'granted') return true;
+      if(Notification.permission === 'denied') return false;
+      Notification.requestPermission();
+      return Notification.permission === 'granted';
+    }
+    function scheduleLocalReminder(title, delayMs){
+      if(!('Notification' in window)) return;
+      if(Notification.permission !== 'granted'){
+        // Try requesting once
+        Notification.requestPermission().then(p=>{
+          if(p==='granted'){
+            if(delayMs!=null){
+              setTimeout(()=> new Notification('🔔 রিমাইন্ডার', { body: 'মনে কর: '+title }), delayMs);
+            }
+          }
+        });
+        return;
+      }
+      if(delayMs!=null){
+        setTimeout(()=> new Notification('🔔 রিমাইন্ডার', { body: 'মনে কর: '+title }), delayMs);
+      }
     }
 
     // 🚀 App
@@ -263,10 +343,20 @@
       };
 
       const addTask=async(payload)=>{
+        const { title, delayMs } = payload;
         if(user&&activeList){
-          await addDoc(collection(db,'users',user.uid,'lists',activeList,'tasks'),{
-            title:payload.title,completed:false,createdAt:serverTimestamp()
-          });
+          const data = {
+            title, completed:false, createdAt:serverTimestamp()
+          };
+          if(delayMs!=null){
+            data.reminderAt = new Date(Date.now()+delayMs).toISOString(); // শুধু দেখার সুবিধার জন্য
+          }
+          const ref = await addDoc(collection(db,'users',user.uid,'lists',activeList,'tasks'), data);
+
+          // Local reminder schedule (tab alive থাকলে)
+          if(delayMs!=null){
+            scheduleLocalReminder(title, delayMs);
+          }
         }
       };
 
@@ -280,7 +370,7 @@
 
       return React.createElement('div',{className:'container'},
         React.createElement(Header,{user,onSignIn:signIn,onSignOut:signOutNow}),
-        React.createElement(ThemeToggle),
+        React.createElement(TopBar,null),
         user && React.createElement(ListTabs,{lists,active:activeList,onSelect:setActiveList,onAdd:addList}),
         user && activeList && React.createElement(AddTaskForm,{onAdd:addTask}),
         user && activeList && React.createElement(TaskList,{tasks,onToggle:toggleTask,onDelete:deleteTask})
