@@ -118,12 +118,25 @@ const firebaseConfig = {
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
-    // Ask notification permission right when app loads
-  if ("Notification" in window) {
-    Notification.requestPermission().then(permission => {
-      console.log("Notification permission:", permission);
-    });
-  }
+    // Notification permission button handler
+document.addEventListener("DOMContentLoaded", () => {
+  const notifyBtn = document.getElementById("notifyBtn");
+  if (!notifyBtn) return;
+
+  notifyBtn.addEventListener("click", () => {
+    if ("Notification" in window) {
+      Notification.requestPermission().then(permission => {
+        console.log("Notification permission:", permission);
+        if (permission === "granted") {
+          alert("Notifications enabled ✅");
+          notifyBtn.style.display = "none"; // hide the button
+        } else {
+          alert("You blocked notifications ❌");
+        }
+      });
+    }
+  });
+});
 
 // 🔔 Audio Tone (pleasant chime) using Web Audio API
 let audioCtx = null;
