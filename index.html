@@ -10,7 +10,16 @@
     :root { --bg:#f7f7f9; --card:#fff; --text:#111; --border:#ddd; --accent:#2563eb; }
     [data-theme="dark"] { --bg:#111; --card:#1a1a1a; --text:#fff; --border:#333; --accent:#60a5fa; }
     .container { max-width:960px; margin:auto; padding:20px; }
-    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px; box-shadow:0 2px 5px rgba(0,0,0,0.08);}
+.card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:14px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.08);
+  color:var(--text);   /* ✅ এখানেই মূল fix */
+}
+
     button { cursor:pointer; margin-left:5px; padding:5px 10px; border-radius:6px; border:1px solid var(--border); background:var(--card); }
     button:hover { opacity:0.9; }
     .list-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
@@ -27,16 +36,18 @@
     .task-title.completed { text-decoration:line-through; opacity:0.7; }
     .task-date { font-size:12px; color:gray; margin-left:30px; }
     /* ✅ Green Header Box */
-    .header-box {
-  background:#16a34a; 
+   .header-box {
+  background:#16a34a;
   color:#fff;
-  padding:20px; 
-  border-radius:12px; 
-  text-align:center; 
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
   margin-bottom:14px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.3);  /* ✅ Shadow যোগ করা হলো */
+  box-shadow:
+    0 4px 10px rgba(0,0,0,0.6),   /* নিচে গাঢ় কালো শ্যাডো */
+    0 0 10px rgba(255,255,255,0.2); /* চারপাশে হালকা সাদা গ্লো */
 }
-
+    
     .header-box h2 {
       margin:0;
       font-size:22px;
